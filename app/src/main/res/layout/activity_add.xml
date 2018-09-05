@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_bg"
+    android:orientation="vertical"
+    android:weightSum="10"
+    tools:context=".Add">
+
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:minHeight="?attr/actionBarSize"
+        app:titleTextColor="@android:color/white" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/rtl1"
+        android:gravity="center"
+        android:layout_weight="8"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <EditText
+            android:layout_marginTop="10dp"
+            android:id="@+id/name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Enter your text to generate"
+            android:textStyle="italic" />
+        <EditText
+            android:layout_below="@+id/name"
+            android:layout_marginTop="10dp"
+            android:id="@+id/number"
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Enter your name card"
+            android:textStyle="italic"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_marginTop="40dp"
+                android:layout_gravity="center"
+                android:id="@+id/imgShow"
+                android:scaleType="fitXY"
+                android:layout_below="@+id/rtl1"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:background="@android:color/white" />
+            <!--<ScrollView
+                android:layout_below="@id/imgShow"
+                android:id="@+id/scrView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ListView
+                    android:id="@+id/list_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </ScrollView>-->
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:weightSum="18"
+        android:layout_below="@+id/rtl2"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnScan"
+            android:layout_weight="1"
+            android:layout_width="90dp"
+            android:layout_marginRight="20dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button"
+            android:fontFamily="sans-serif-smallcaps"
+            android:src="@drawable/scan1"
+            android:textAlignment="gravity"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnCreate"
+            android:layout_width="90dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="20dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_button"
+            android:fontFamily="sans-serif-smallcaps"
+            android:text="Create"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
+</LinearLayout>

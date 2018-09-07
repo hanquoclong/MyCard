@@ -3,6 +3,7 @@ package com.example.korealong.qrcodescanner;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,10 +14,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.example.korealong.qrcodescanner.Adapter.SearchAdapter;
+import com.example.korealong.qrcodescanner.Databases.DatabaseGetData;
 import com.example.korealong.qrcodescanner.Sqlite.AdapterCard;
 import com.example.korealong.qrcodescanner.Sqlite.Database;
 import com.example.korealong.qrcodescanner.Sqlite.UserCard;
@@ -29,13 +33,14 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    public static ListView lvShow;
+    public static RecyclerView lvShow;
     private ProgressBar circular_progress;
 
     final String DATABASE_NAME = "MCardDB.sqlite";
     SQLiteDatabase database;
     ArrayList<UserCard> listUC;
     AdapterCard adapterCard;
+
 
     DatabaseReference dref;
 
@@ -44,12 +49,44 @@ public class MainActivity extends AppCompatActivity {
 
     MaterialSearchBar searchBar;
 
+    private RecyclerView.LayoutManager layoutManager;
+    SearchAdapter searchAdapter;
+
     // Create ImageButton on title bar(optionmenu)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_first,menu);
+
+        MenuItem searchItem = menu.findItem(R.id.mnuSearch);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ArrayList<String> userslist = new ArrayList<>();
+                for (UserCard user : listUC){
+                    if (String.valueOf(user).toLowerCase().contains(newText.toLowerCase()))
+                    {
+                        userslist.add(String.valueOf(user));
+                    }
+                }
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
+                        android.R.layout.simple_list_item_1,userslist);
+
+                lvShow.setAdapter(searchAdapter);
+
+
+
+                return true;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         addControl();
-        addItemClickListView();
+        //addItemClickListView();
         addListview_SQLite();
         readData_SQLite();
         //addListview_FB();
@@ -83,9 +120,13 @@ public class MainActivity extends AppCompatActivity {
         //initFirebase();
         //addEventFirebaseListener();
 
+        layoutManager = new LinearLayoutManager(this);
+        lvShow.setLayoutManager(layoutManager);
+        searchAdapter = new SearchAdapter(this,listUC);
+        lvShow.setAdapter(searchAdapter);
 
     }
-    private void addItemClickListView() {
+    /*private void addItemClickListView() {
         lvShow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -95,11 +136,11 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-    }
+    }*/
     private void addListview_SQLite() {
         listUC = new ArrayList<>();
         adapterCard = new AdapterCard(this,listUC);
-        lvShow.setAdapter(adapterCard);
+        lvShow.setAdapter(searchAdapter);
     }
     private  void readData_SQLite(){
         database = Database.initDatabase(this,DATABASE_NAME);
@@ -150,9 +191,9 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     private void addControl() {
-        searchBar = findViewById(R.id.searchbar);
 
-        lvShow = (ListView) findViewById(R.id.lvShow);
+        lvShow = (RecyclerView) findViewById(R.id.lvShow);
+        lvShow.setHasFixedSize(true);
 
         circular_progress = (ProgressBar) findViewById(R.id.circular_progress);
 
@@ -224,4 +265,5 @@ public class MainActivity extends AppCompatActivity {
         edtName.setText("");
         edtNumber.setText("");
     }*/
+
 }

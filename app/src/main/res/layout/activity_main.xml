@@ -9,31 +9,22 @@
     <LinearLayout
         android:id="@+id/ll1"
         android:background="@android:color/white"
-        android:weightSum="10"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <com.mancj.materialsearchbar.MaterialSearchBar
-            android:id="@+id/searchbar"
-            android:background="@android:color/transparent"
-            android:layout_weight="9"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"/>
-
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_marginRight="5dp"
-            android:layout_weight="1"
             android:background="@android:color/white"
             android:minHeight="?attr/actionBarSize"
             app:titleTextColor="@android:color/white" />
     </LinearLayout>
 
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/lvShow"
         android:layout_below="@+id/ll1"
         android:layout_width="match_parent"

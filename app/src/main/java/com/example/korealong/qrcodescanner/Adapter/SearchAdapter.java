@@ -2,6 +2,7 @@ package com.example.korealong.qrcodescanner.Adapter;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.korealong.qrcodescanner.Detail;
 import com.example.korealong.qrcodescanner.ItemClickListener;
 import com.example.korealong.qrcodescanner.R;
 import com.example.korealong.qrcodescanner.Sqlite.UserCard;
@@ -28,6 +30,10 @@ class SearchViewHolder extends RecyclerView.ViewHolder implements View.OnClickLi
         txtNameCard = itemView.findViewById(R.id.txtNameCard);
         txtNameStore = itemView.findViewById(R.id.txtNameStore);
         imgView = itemView.findViewById(R.id.imgAVT);
+
+        itemView.setOnClickListener(this);
+        itemView.setOnLongClickListener(this);
+
     }
 
     public void setItemClickListener(ItemClickListener itemClickListener)
@@ -65,6 +71,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder>{
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
         holder.txtNameCard.setText(userCard.get(position).getNameCard());
         holder.txtNameStore.setText(userCard.get(position).getNameStore());
+
         byte[] id = userCard.get(position).getImage();
         holder.imgView.setImageBitmap(BitmapFactory.decodeByteArray(id,0,id.length));
 
@@ -72,9 +79,11 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchViewHolder>{
         holder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onClick(View view, int position, boolean isLongClick) {
-                if (isLongClick)
+                if (isLongClick == false)
                 {
-                    //Toast.makeText(context, "Long click: "+userCard.get(position), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(context,Detail.class);
+                    intent.putExtra("ID",userCard.get(position).getId());
+                    context.startActivity(intent);
 
                 }
             }

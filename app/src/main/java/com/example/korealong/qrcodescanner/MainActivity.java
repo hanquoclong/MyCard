@@ -10,6 +10,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar circular_progress;
 
     final String DATABASE_NAME = "MCardDB.sqlite";
-    SQLiteDatabase database;
+    //SQLiteDatabase database;
     ArrayList<UserCard> listUC;
     AdapterCard adapterCard;
 
@@ -48,42 +50,15 @@ public class MainActivity extends AppCompatActivity {
     ListViewAdapter adapter;
 
     MaterialSearchBar searchBar;
+    DatabaseGetData databaseGetData;
 
     private RecyclerView.LayoutManager layoutManager;
     SearchAdapter searchAdapter;
-
+    List<String> suggestList = new ArrayList<>();
     // Create ImageButton on title bar(optionmenu)
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_first,menu);
-
-        MenuItem searchItem = menu.findItem(R.id.mnuSearch);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                ArrayList<String> userslist = new ArrayList<>();
-                for (UserCard user : listUC){
-                    if (String.valueOf(user).toLowerCase().contains(newText.toLowerCase()))
-                    {
-                        userslist.add(String.valueOf(user));
-                    }
-                }
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,
-                        android.R.layout.simple_list_item_1,userslist);
-
-                lvShow.setAdapter(searchAdapter);
-
-
-
-                return true;
-            }
-        });
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -102,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         addControl();
         //addItemClickListView();
         addListview_SQLite();
-        readData_SQLite();
+        //readData_SQLite();
         //addListview_FB();
         //0986780999
 
@@ -120,12 +95,72 @@ public class MainActivity extends AppCompatActivity {
         //initFirebase();
         //addEventFirebaseListener();
 
+
+
         layoutManager = new LinearLayoutManager(this);
         lvShow.setLayoutManager(layoutManager);
         searchAdapter = new SearchAdapter(this,listUC);
         lvShow.setAdapter(searchAdapter);
 
+        loadSuggestList();
+        addEventSearchBar();
+
     }
+
+    private void loadSuggestList() {
+        suggestList = databaseGetData.getNameCard();
+        searchBar.setLastSuggestions(suggestList);
+    }
+
+    private void addEventSearchBar() {
+        searchBar.addTextChangeListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                List<String> suggest = new ArrayList<>();
+                for (String search:suggestList)
+                {
+                    if (search.toLowerCase().contains(searchBar.getText().toLowerCase()))
+                        suggest.add(search);
+                }
+                searchBar.setLastSuggestions(suggest);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+        searchBar.setOnSearchActionListener(new MaterialSearchBar.OnSearchActionListener() {
+            @Override
+            public void onSearchStateChanged(boolean enabled) {
+                searchAdapter = new SearchAdapter(getBaseContext(),databaseGetData.getCard());
+                lvShow.setAdapter(searchAdapter);
+            }
+
+            @Override
+            public void onSearchConfirmed(CharSequence text) {
+                startSearch(text.toString());
+            }
+
+            @Override
+            public void onButtonClicked(int buttonCode) {
+
+            }
+        });
+        searchAdapter = new SearchAdapter(this,databaseGetData.getCard());
+        lvShow.setAdapter(searchAdapter);
+    }
+
+    private void startSearch(String text) {
+        searchAdapter = new SearchAdapter(this,databaseGetData.getCardByName(text));
+        lvShow.setAdapter(searchAdapter);
+    }
+
     /*private void addItemClickListView() {
         lvShow.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -141,20 +176,6 @@ public class MainActivity extends AppCompatActivity {
         listUC = new ArrayList<>();
         adapterCard = new AdapterCard(this,listUC);
         lvShow.setAdapter(searchAdapter);
-    }
-    private  void readData_SQLite(){
-        database = Database.initDatabase(this,DATABASE_NAME);
-        Cursor cursor = database.rawQuery("SELECT * FROM Card",null);
-        listUC.clear();
-        for (int i = 0; i < cursor.getCount(); i++){
-            cursor.moveToPosition(i);
-            int id = cursor.getInt(0);
-            String nameCard = cursor.getString(1);
-            String nameStore = cursor.getString(2);
-            byte[] image = cursor.getBlob(3);
-            listUC.add(new UserCard(id,nameCard,nameStore,image));
-        }
-        adapterCard.notifyDataSetChanged();
     }
     /*private void addListview_FB() {
         adapter = new ListViewAdapter(this,list);
@@ -191,6 +212,12 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     private void addControl() {
+
+        searchBar = findViewById(R.id.search_bar);
+        searchBar.setHint("Search");
+        searchBar.setCardViewElevation(10);
+
+        databaseGetData = new DatabaseGetData(this);
 
         lvShow = (RecyclerView) findViewById(R.id.lvShow);
         lvShow.setHasFixedSize(true);
